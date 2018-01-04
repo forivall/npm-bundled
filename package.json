@@ -23,5 +23,8 @@
   },
   "files": [
     "index.js"
-  ]
+  ],
+  "dependencies": {
+    "debug": "^3.1.0"
+  }
 }

@@ -9,6 +9,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const debug = require('debug')('npm-bundled')
 const EE = require('events').EventEmitter
 
 class BundleWalker extends EE {
@@ -80,6 +81,7 @@ class BundleWalker extends EE {
   }
 
   onPackage (pkg) {
+    debug('onPackage', pkg.name)
     // all deps are bundled if we got here as a child.
     // otherwise, only bundle bundledDeps
     // Get a unique-ified array with a short-lived Set
@@ -114,6 +116,7 @@ class BundleWalker extends EE {
   }
 
   childDep (dep) {
+    debug('childDep', dep)
     if (this.node_modules.indexOf(dep) !== -1) {
       this.child(dep)
     } else if (this.parent) {
@@ -124,6 +127,9 @@ class BundleWalker extends EE {
   child (dep) {
     const p = this.path + '/node_modules/' + dep
     this.children += 1
+
+    debug('child', this.path, dep, this.children)
+
     const child = new BundleWalker({
       path: p,
       parent: this
@@ -155,6 +161,7 @@ class BundleWalkerSync extends BundleWalker {
   }
 
   readModules () {
+    debug('readModules: readdir', this.path)
     try {
       this.onReaddir(readdirNodeModulesSync(this.path + '/node_modules'))
     } catch (er) {
